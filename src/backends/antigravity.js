@@ -251,17 +251,8 @@ setInterval(() => {
 
 // ─── Message building ─────────────────────────────────────────────────────────
 
-const FILES_ONLY_CONSTRAINT = `IMPORTANT CONSTRAINT: You may only read and write files. Do NOT use run_command, execute scripts, or run any shell commands. If you need to verify something, do it by reading the file you just wrote. Never generate a RUN_COMMAND step.`;
-
-function buildItems(messages, toolsMode = 'files_only') {
+function buildItems(messages) {
   const systemParts = messages.filter(m => m.role === 'system').map(m => m.content);
-  if (toolsMode === 'files_only') {
-    systemParts.push(FILES_ONLY_CONSTRAINT);
-    if (CTX?.workspaceUri) {
-      const workspacePath = CTX.workspaceUri.replace(/^file:\/\//, '');
-      systemParts.push(`WORKSPACE CONSTRAINT: Only read and write files within the workspace directory: ${workspacePath}. Do NOT access files outside this directory.`);
-    }
-  }
   const nonSystem  = messages.filter(m => m.role !== 'system');
   const userItems  = nonSystem.length === 1
     ? messageParts(nonSystem[0])
@@ -511,9 +502,8 @@ async function complete(body, res) {
   const sessionId         = body.session_id ?? null;
   const session           = sessionId ? getSession(sessionId) : null;
   const existingCascadeId = session?.cascadeId ?? null;
-  const toolsMode         = body.tools ?? 'files_only';
   const itemMessages      = session ? messages.filter(m => m.role !== 'assistant').slice(-1) : messages;
-  const items             = buildItems(itemMessages, toolsMode);
+  const items             = buildItems(itemMessages);
   const promptChars       = items.reduce((s, i) => s + (i.text?.length ?? 0), 0);
   const cascadeConfig     = body.cascadeConfig ?? buildCascadeConfig(resolvedModelId);
 
@@ -607,7 +597,7 @@ async function complete(body, res) {
       model: resolvedModelId,
       requested_model: resolvedModelId !== modelId ? modelId : undefined,
       session_id:  sessionId ?? undefined,
-      tools_mode:  toolsMode,
+
       actions:     hasActions ? actions : undefined,
       choices: [{
         index: 0,
