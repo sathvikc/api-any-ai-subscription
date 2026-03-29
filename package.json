@@ -1,0 +1,27 @@
+{
+  "name": "api-any-ai-subscription",
+  "version": "0.1.0",
+  "description": "Standardizing AI subscriptions into OpenAI-compatible API endpoints for local development and testing.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js",
+    "test": "jest --runInBand",
+    "test:anthropic": "jest --runInBand anthropic",
+    "test:antigravity": "jest --runInBand antigravity",
+    "test:router": "jest --runInBand router",
+    "test:slow": "jest --runInBand -t \"\\[slow\\]\"",
+    "test:fast": "jest --runInBand -t \"^(?!.*\\[slow\\])\""
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.test.js"],
+    "testTimeout": 60000,
+    "verbose": true
+  },
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^30.3.0"
+  }
+}
