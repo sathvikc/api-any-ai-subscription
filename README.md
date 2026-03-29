@@ -7,7 +7,14 @@ A lightweight bridge that turns personal AI subscriptions into a single OpenAI-c
 
 > **Intended use**: Personal development and testing only. Not for commercial use or production deployment. Use at your own risk.
 
----
+## Demo
+
+### Antigravity
+[https://github.com/sathvikc/api-any-ai-subscription/raw/main/assets/API_WITH_ANTIGRAVITY.mp4](https://github.com/user-attachments/assets/463d7a3c-04be-4b26-8e7a-c2c3e37659c1)
+
+### Claude
+[https://github.com/sathvikc/api-any-ai-subscription/raw/main/assets/API_WITH_CLAUDE.mp4](https://github.com/user-attachments/assets/65dbe592-fab6-48b9-afcc-538641f1c55b)
+
 
 ## Supported subscriptions
 
