@@ -14,7 +14,6 @@ const { execSync } = require('child_process');
 const crypto     = require('crypto');
 
 const LOG_FILE        = '/tmp/bridge_v7.log';
-const MIN_REQUEST_GAP = parseInt(process.env.MIN_REQUEST_GAP_MS ?? '3000');
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -32,16 +31,6 @@ function jsonResp(res, status, data) {
 
 function errBody(msg) {
   return { error: { message: String(msg), type: 'invalid_request_error', code: null } };
-}
-
-// ─── Throttle ─────────────────────────────────────────────────────────────────
-
-let lastRequestAt = 0;
-async function throttle() {
-  const gap    = MIN_REQUEST_GAP * (0.7 + Math.random() * 0.6);
-  const waited = Date.now() - lastRequestAt;
-  if (waited < gap) await new Promise(r => setTimeout(r, gap - waited));
-  lastRequestAt = Date.now();
 }
 
 // ─── Quota tracker (in-memory only) ──────────────────────────────────────────
@@ -508,7 +497,7 @@ async function complete(body, res) {
   const cascadeConfig     = body.cascadeConfig ?? buildCascadeConfig(resolvedModelId);
 
   try {
-    await throttle();
+
     if (!CTX) CTX = await discoverContext();
 
     // ── Streaming ────────────────────────────────────────────────────────────

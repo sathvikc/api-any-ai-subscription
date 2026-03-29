@@ -16,7 +16,6 @@ const readline = require('readline');
 const API_HOST         = 'api.anthropic.com';
 const CLAUDE_CODE_SYS  = "You are Claude Code, Anthropic's official CLI for Claude.";
 const BETA_HEADERS     = 'claude-code-20250219,oauth-2025-04-20,interleaved-thinking-2025-05-14,context-management-2025-06-27,prompt-caching-scope-2026-01-05,advanced-tool-use-2025-11-20,effort-2025-11-24';
-const MIN_REQUEST_GAP  = parseInt(process.env.MIN_REQUEST_GAP_MS ?? '3000');
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -143,16 +142,6 @@ function updateRateLimits(modelAlias, headers) {
       lastSeen:  new Date().toISOString(),
     };
   }
-}
-
-// ─── Throttle ─────────────────────────────────────────────────────────────────
-
-let lastRequestAt = 0;
-async function throttle() {
-  const gap    = MIN_REQUEST_GAP * (0.7 + Math.random() * 0.6);
-  const waited = Date.now() - lastRequestAt;
-  if (waited < gap) await new Promise(r => setTimeout(r, gap - waited));
-  lastRequestAt = Date.now();
 }
 
 // ─── Quota tracker (in-memory only) ──────────────────────────────────────────
@@ -574,7 +563,7 @@ async function complete(body, res) {
 
   try {
     const util5hBefore = rateLimitStats[finalModel.alias]?.util5h ?? null;
-    await throttle();
+
     const t0 = Date.now();
     const anthropicRes = await callAnthropic({ modelId: finalModel.id, messages, stream, maxTokens: max_tokens, tools, toolChoice: tool_choice });
     updateRateLimits(finalModel.alias, anthropicRes.headers);
